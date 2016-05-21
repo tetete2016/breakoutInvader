@@ -50,6 +50,10 @@
             }
         }
         window.onload = function () {
+            document.addEventListener("touchstart", touchHandler, false);
+            document.addEventListener("touchmove", touchHandler, false);
+            document.addEventListener("touchend", touchHandler, false);
+            document.addEventListener("touchcancel", touchHandler, false);
             document.body.style.margin = "0px";
             canvas.width = 600;
             canvas.height = 900;
@@ -205,6 +209,13 @@
             cursor = e.clientX - 300;
         }
         document.onclick = function (e) {
+            if (350 < e.clientY && e.clientY < 550) {
+                reset();
+            }
+        }
+        function touchHandler(e) {
+            e.preventDefault();
+            cursor = e.clientX - 300;
             if (350 < e.clientY && e.clientY < 550) {
                 reset();
             }
