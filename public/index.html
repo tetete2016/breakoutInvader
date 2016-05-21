@@ -51,6 +51,8 @@
             }
         }
         window.onload = function () {
+            canvas.ontouchstart = ontouch;
+            canvas.ontouchmove = ontouch;
             document.addEventListener("touchstart", touchHandler, false);
             document.addEventListener("touchmove", touchHandler, false);
             document.addEventListener("touchend", touchHandler, false);
@@ -215,11 +217,14 @@
             }
         }
         function touchHandler(e) {
+            e.preventDefault();
+        }
+        function ontouch() {
+            e = event.touches[0];
             cursor = e.clientX - 300;
             if (350 < e.clientY && e.clientY < 550 && gameover) {
                 reset();
             }
-            e.preventDefault();
         }
     </script>
 </body>
