@@ -1,9 +1,6 @@
 var express = require('express');
 var app = express();
-var bodyParser = require('body-parser');
-var pg = require('pg');
 
-var scores = [];
 app.use(express.static('public'));
 
 app.set('port', (process.env.PORT || 5000));
