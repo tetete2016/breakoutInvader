@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=600" id="view" />
     <title>block invader</title>
 </head>
 <body>
@@ -209,16 +210,16 @@
             cursor = e.clientX - 300;
         }
         document.onclick = function (e) {
-            if (350 < e.clientY && e.clientY < 550) {
+            if (350 < e.clientY && e.clientY < 550 && gameover) {
                 reset();
             }
         }
         function touchHandler(e) {
-            e.preventDefault();
             cursor = e.clientX - 300;
-            if (350 < e.clientY && e.clientY < 550) {
+            if (350 < e.clientY && e.clientY < 550 && gameover) {
                 reset();
             }
+            e.preventDefault();
         }
     </script>
 </body>
