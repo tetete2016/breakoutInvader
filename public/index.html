@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>block invader</title>
+</head>
+<body>
+    <script>
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+
+        var x = 0;
+        var lx = 0;
+        var vx = 0;
+        var y = 0;
+        var ly = 0;
+        var vy = 0;
+
+        var cursor = 0;
+
+        var rects;
+
+        var dir = 0;
+        var dir1 = 0;
+
+        var hitPos = 0;
+
+        var score = 0;
+
+        var gameover = false;
+
+
+        function reset() {
+            dir = 0.5;
+            lx = x = 0;
+            ly = y = 0;
+            vy = 5;
+            vx = 0;
+            resetBlock();
+            score = 0;
+            gameover = false;
+        }
+        function resetBlock() {
+            rects = [];
+            for (var i = 0; i < 6; i++) {
+                for (var j = 0; j < 6; j++) {
+                    rects.push(new Block(j * 60 - 1 - 300, i * 30 - 450 - 1, 62, 32));
+                }
+            }
+        }
+        window.onload = function () {
+            document.body.style.margin = "0px";
+            canvas.width = 600;
+            canvas.height = 900;
+            document.body.appendChild(canvas);
+            reset();
+            setInterval(timer, 20);
+        }
+        function timer() {
+            move();
+            //draw
+            ctx.fillStyle = "rgb(255,255,255)";
+            ctx.fillRect(0, 0, 600, 900);
+            ctx.strokeStyle = "rgb(127,127,127)";
+            ctx.lineWidth = 10;
+            ctx.strokeRect(0, 0, 600, 900);
+
+            ctx.fillStyle = "rgb(127,127,127)";
+            ctx.fillRect(cursor + 300 - 40, 900 - 50, 80, 10);
+
+            for (var i = 0; i < rects.length; i++) {
+                ctx.fillStyle = "rgb(127,127,256)";
+                ctx.fillRect(rects[i].x + 300, rects[i].y + 450, rects[i].w, rects[i].h);
+            }
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fillRect(x + 300, y + 450, 10, 10);
+        }
+        function move() {
+            //y += 0.1;
+            if (gameover) return;
+            if (y > 450) {
+                gameover = true;
+            }
+            if (vy > 15) {
+                vy = 15;
+            }
+            var y1 = y + vy;
+            var x1 = x + vx;
+            if (y <= 400 && y1 >= 400 && ((cursor - 50 < x1 && x1 < cursor + 50) || (cursor - 50 < x && x < cursor + 50))) {
+                //vy = -vy * (Math.sqrt(Math.abs(30 * 30 - (cursor - x) * (cursor - x))) / 30) * 1.2;
+                vy = -vy;
+                vx = (x - cursor) / 5;
+                y = y + vy;
+                return;
+            }
+            if (x < -300 || 300 < x) {
+                reflectX();
+                return;
+            }
+            if (y <= -450) {
+                reflectY();
+                return;
+            }
+            dir1 = dir;
+            for (var i = 0; i < rects.length; i++) {
+                rects[i].checkSide();
+                if (dir != dir) continue;
+                rects[i].x += dir;
+            }
+            if (dir != dir1) {
+                for (var i = 0; i < rects.length; i++) {
+                    rects[i].y += 40;
+                }
+            }
+            if (rects.length <= 0) {
+                resetBlock();
+                dir *= 2;
+            }
+            for (var i = 0; i < rects.length; i++) {
+                if (rects[i].x < x && x < rects[i].x + rects[i].w && rects[i].y < y && y < rects[i].y + rects[i].h) {
+                    console.log(y + "r" + (rects[i].y + rects[i].h));
+                    var refx = false;
+                    var refy = false;
+                    if (ly < rects[i].y + 10) {
+                        reflectY();
+                        vy = -Math.abs(vy);
+                        refy = true;
+                    }
+                    if (rects[i].y + rects[i].h - 10 < y) {
+                        reflectY();
+                        vy = Math.abs(vy);
+                        refy = true;
+                    }
+                    if (lx < rects[i].x) {
+                        vx = -Math.abs(vx);
+                        refx = true;
+                    }
+                    if (rects[i].x + rects[i].w < lx) {
+                        reflectX();
+                        vx = Math.abs(vx);
+                        refx = true;
+                    }
+                    if ((!refx) && (!refy)) {
+                        if (Math.abs(rects[i].getCenterX() - x) > Math.abs(rects[i].getCenterY() - y) * 2) {
+                            reflectX();
+                        } else {
+                            reflectY();
+                        }
+                    }
+                    score++;
+                    rects.splice(i, 1);
+                    return;
+                }
+            }
+            lx = x;
+            ly = y;
+            y = y1;
+            x = x1;
+        }
+        function Block(x, y, w, h) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.getCenterX = function () {
+                return x + w / 2;
+            }
+            this.getCenterY = function () {
+                return y + h / 2;
+            }
+            this.checkSide = function () {
+                if (this.x <= -300) {
+                    dir = Math.abs(dir);
+                    hitPos = this.x;
+                }
+                if (this.x + this.w >= 300) {
+                    dir = -Math.abs(dir);
+                    hitPos = this.x;
+                }
+                if (this.y > 340) {
+                    gameover = true;
+                }
+            }
+        }
+        function reflectX() {
+            vx *= -1;
+            x = vx + x;
+        }
+        function reflectY() {
+            vy *= -1;
+            y = y + vy;
+        }
+        document.onmousemove = function (e) {
+            cursor = e.clientX - 300;
+        }
+    </script>
+</body>
+</html>
