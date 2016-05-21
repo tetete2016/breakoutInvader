@@ -75,6 +75,16 @@
             }
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.fillRect(x + 300, y + 450, 10, 10);
+            ctx.font = '400 60px/2 Unknown Font, sans-serif';;
+            ctx.textAlign = "left";
+            ctx.fillText(score, 0, 50);
+            if (gameover) {
+                ctx.font = 'italic 400 90px/2 Unknown Font, sans-serif';
+                ctx.textAlign = "center";
+                ctx.fillText("GAMEOVER", 300, 450);
+                ctx.font = '400 30px/2 Unknown Font, sans-serif';
+                ctx.fillText("Tap here to restart", 300, 480);
+            }
         }
         function move() {
             //y += 0.1;
@@ -193,6 +203,11 @@
         }
         document.onmousemove = function (e) {
             cursor = e.clientX - 300;
+        }
+        document.onclick = function (e) {
+            if (350 < e.clientY && e.clientY < 550) {
+                reset();
+            }
         }
     </script>
 </body>
